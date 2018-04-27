@@ -377,7 +377,7 @@ enumerationView : List String -> Html Msg
 enumerationView members =
     let
         items =
-            List.map (\item -> li [] [ text item ]) members
+            List.map (\item -> li [] [ text item ]) <| List.sort members
     in
         ul []
             items
