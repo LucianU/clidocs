@@ -114,12 +114,10 @@ convertTypes types =
                 if List.length (type_.cases) == 0 then
                     "type " ++ argsString
                 else
-                    (Debug.log "cases" <|
-                        "type "
-                            ++ argsString
-                            ++ "\n    = "
-                            ++ (String.join "\n    | " <| convertCases <| type_.cases)
-                    )
+                    "type "
+                        ++ argsString
+                        ++ "\n    = "
+                        ++ (String.join "\n    | " <| convertCases <| type_.cases)
 
         convert type_ =
             { name = type_.name
