@@ -227,7 +227,7 @@ parseDocCommand model command =
                 symbolBits =
                     String.split "." symbol
             in
-                case symbolBits of
+                case List.reverse symbolBits of
                     [] ->
                         Error <| "Missing argument to `docs`"
 
@@ -239,18 +239,28 @@ parseDocCommand model command =
                             Nothing ->
                                 Error <| "Unknown module " ++ moduleName
 
-                    moduleName :: typeName :: _ ->
-                        case searchModule moduleName model.docs of
+                    lastType :: rest ->
+                        -- Determine if the last type in the list is a submodule or an actual type
+                        case searchModule (String.join "." symbolBits) model.docs of
                             Just mod ->
-                                case search typeName mod.types of
-                                    Just type_ ->
-                                        Detail type_
-
-                                    Nothing ->
-                                        Error <| "Unknown type " ++ typeName
+                                Enumeration <| listModuleTypes mod
 
                             Nothing ->
-                                Error <| "Unknown module " ++ moduleName
+                                let
+                                    moduleName =
+                                        String.join "." <| List.reverse rest
+                                in
+                                    case searchModule moduleName model.docs of
+                                        Just mod ->
+                                            case search lastType mod.types of
+                                                Just type_ ->
+                                                    Detail type_
+
+                                                Nothing ->
+                                                    Error <| "Unknown type " ++ moduleName ++ "." ++ lastType
+
+                                        Nothing ->
+                                            Error <| "Unknown module " ++ (String.join "." symbolBits)
 
 
 splitCommand : String -> List String
