@@ -193,72 +193,69 @@ parseCommand model =
 
 parseModulesCommand : Model -> String -> Output
 parseModulesCommand model command =
-    let
-        components =
-            String.split " " command
-    in
-        case components of
-            [] ->
-                Error <| "Missing command"
+    case splitCommand command of
+        [] ->
+            Error <| "Missing command"
 
-            [ cmd ] ->
-                Error <| "You need to specify a package"
+        [ cmd ] ->
+            Error <| "You need to specify a package"
 
-            cmd :: packageName :: _ ->
-                let
-                    package =
-                        search packageName model.docs
-                in
-                    case package of
-                        Just pack ->
-                            Enumeration <| List.map (\mod -> mod.name) pack.modules
+        cmd :: packageName :: _ ->
+            let
+                package =
+                    search packageName model.docs
+            in
+                case package of
+                    Just pack ->
+                        Enumeration <| List.map (\mod -> mod.name) pack.modules
 
-                        Nothing ->
-                            Error <| "Unknown package " ++ packageName
+                    Nothing ->
+                        Error <| "Unknown package " ++ packageName
 
 
 parseDocCommand : Model -> String -> Output
 parseDocCommand model command =
-    let
-        components =
-            String.split " " command
-    in
-        case components of
-            [] ->
-                Error <| "Missing command"
+    case splitCommand command of
+        [] ->
+            Error <| "Missing command"
 
-            [ cmd ] ->
-                Error <| "Missing argument to `docs`"
+        [ cmd ] ->
+            Error <| "Missing argument to `docs`"
 
-            cmd :: symbol :: _ ->
-                let
-                    symbolBits =
-                        String.split "." symbol
-                in
-                    case symbolBits of
-                        [] ->
-                            Error <| "Missing argument to `docs`"
+        cmd :: symbol :: _ ->
+            let
+                symbolBits =
+                    String.split "." symbol
+            in
+                case symbolBits of
+                    [] ->
+                        Error <| "Missing argument to `docs`"
 
-                        [ moduleName ] ->
-                            case searchModule moduleName model.docs of
-                                Just mod ->
-                                    Enumeration <| listModuleTypes mod
+                    [ moduleName ] ->
+                        case searchModule moduleName model.docs of
+                            Just mod ->
+                                Enumeration <| listModuleTypes mod
 
-                                Nothing ->
-                                    Error <| "Unknown module " ++ moduleName
+                            Nothing ->
+                                Error <| "Unknown module " ++ moduleName
 
-                        moduleName :: typeName :: _ ->
-                            case searchModule moduleName model.docs of
-                                Just mod ->
-                                    case search typeName mod.types of
-                                        Just type_ ->
-                                            Detail type_
+                    moduleName :: typeName :: _ ->
+                        case searchModule moduleName model.docs of
+                            Just mod ->
+                                case search typeName mod.types of
+                                    Just type_ ->
+                                        Detail type_
 
-                                        Nothing ->
-                                            Error <| "Unknown type " ++ typeName
+                                    Nothing ->
+                                        Error <| "Unknown type " ++ typeName
 
-                                Nothing ->
-                                    Error <| "Unknown module " ++ moduleName
+                            Nothing ->
+                                Error <| "Unknown module " ++ moduleName
+
+
+splitCommand : String -> List String
+splitCommand command =
+    List.map (\part -> String.trim part) <| String.split " " command
 
 
 listModuleTypes : Data.Module -> List String
