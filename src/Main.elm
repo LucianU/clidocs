@@ -198,7 +198,7 @@ parseModulesCommand model command =
             Error <| "Missing command"
 
         [ cmd ] ->
-            Error <| "You need to specify a package"
+            Error <| "Command \"modules\" expects a package name."
 
         cmd :: packageName :: _ ->
             let
@@ -360,6 +360,8 @@ historyView command =
                 [ promptView command.input
                 , div [ class "error" ]
                     [ text error
+                    , br [] []
+                    , text "Type \"help\" for available commands"
                     ]
                 ]
 
