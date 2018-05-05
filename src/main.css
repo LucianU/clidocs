@@ -57,3 +57,7 @@ input:focus {
   padding-left: 3em;
   text-align: left;
 }
+
+.welcome {
+  margin-bottom: 2em;
+}
