@@ -188,7 +188,7 @@ parseCommand model =
         else if String.startsWith "docs" command then
             parseDocCommand model command
         else
-            Error <| "Unknown command " ++ command
+            Error <| "Unknown command " ++ "\"" ++ command ++ "\""
 
 
 parseModulesCommand : Model -> String -> Output
@@ -316,13 +316,23 @@ search objName objList =
 
 prompt : String
 prompt =
-    "elm> "
+    "[cli@docs:~$] "
+
+
+welcomeMessage : Html Msg
+welcomeMessage =
+    div [ class "welcome" ]
+        [ text "Welcome to CLI for Documentation! Currently only Elm docs are available."
+        , br [] []
+        , text "Type \"help\" to see available commands"
+        ]
 
 
 view : Model -> Html Msg
 view model =
     div [ id "terminal", onClick Focus ]
-        [ div [ id "history" ] <|
+        [ welcomeMessage
+        , div [ id "history" ] <|
             List.map historyView model.history
         , label [ class "input" ]
             [ text prompt
